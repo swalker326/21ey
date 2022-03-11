@@ -145,6 +145,12 @@ export type ModelGoalConnection = {
   startedAt?: number | null,
 };
 
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
 export type CreateGoalMutationVariables = {
   input: CreateGoalInput,
   condition?: ModelGoalConditionInput | null,
@@ -292,5 +298,102 @@ export type SyncGoalsQuery = {
     } | null >,
     nextToken?: string | null,
     startedAt?: number | null,
+  } | null,
+};
+
+export type GoalsByOwnerQueryVariables = {
+  owner: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelGoalFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type GoalsByOwnerQuery = {
+  goalsByOwner?:  {
+    __typename: "ModelGoalConnection",
+    items:  Array< {
+      __typename: "Goal",
+      id: string,
+      name: string,
+      status: GoalStatus,
+      type: string,
+      owner: string,
+      startDate: string,
+      daysCompleted?: Array< string | null > | null,
+      createdOn: string,
+      updatedOn: string,
+      _version: number,
+      _deleted?: boolean | null,
+      _lastChangedAt: number,
+    } | null >,
+    nextToken?: string | null,
+    startedAt?: number | null,
+  } | null,
+};
+
+export type OnCreateGoalSubscriptionVariables = {
+  owner?: string | null,
+};
+
+export type OnCreateGoalSubscription = {
+  onCreateGoal?:  {
+    __typename: "Goal",
+    id: string,
+    name: string,
+    status: GoalStatus,
+    type: string,
+    owner: string,
+    startDate: string,
+    daysCompleted?: Array< string | null > | null,
+    createdOn: string,
+    updatedOn: string,
+    _version: number,
+    _deleted?: boolean | null,
+    _lastChangedAt: number,
+  } | null,
+};
+
+export type OnUpdateGoalSubscriptionVariables = {
+  owner?: string | null,
+};
+
+export type OnUpdateGoalSubscription = {
+  onUpdateGoal?:  {
+    __typename: "Goal",
+    id: string,
+    name: string,
+    status: GoalStatus,
+    type: string,
+    owner: string,
+    startDate: string,
+    daysCompleted?: Array< string | null > | null,
+    createdOn: string,
+    updatedOn: string,
+    _version: number,
+    _deleted?: boolean | null,
+    _lastChangedAt: number,
+  } | null,
+};
+
+export type OnDeleteGoalSubscriptionVariables = {
+  owner?: string | null,
+};
+
+export type OnDeleteGoalSubscription = {
+  onDeleteGoal?:  {
+    __typename: "Goal",
+    id: string,
+    name: string,
+    status: GoalStatus,
+    type: string,
+    owner: string,
+    startDate: string,
+    daysCompleted?: Array< string | null > | null,
+    createdOn: string,
+    updatedOn: string,
+    _version: number,
+    _deleted?: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };

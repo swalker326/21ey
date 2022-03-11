@@ -86,10 +86,17 @@ export const schema = {
                         "timestamps": {
                             "createdAt": "createdOn",
                             "updatedAt": "updatedOn"
-                        },
-                        "subscriptions": {
-                            "level": "public"
                         }
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "goalsByOwner",
+                        "queryField": "goalsByOwner",
+                        "fields": [
+                            "owner"
+                        ]
                     }
                 },
                 {

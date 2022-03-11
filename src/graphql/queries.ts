@@ -78,3 +78,37 @@ export const syncGoals = /* GraphQL */ `
     }
   }
 `;
+export const goalsByOwner = /* GraphQL */ `
+  query GoalsByOwner(
+    $owner: String!
+    $sortDirection: ModelSortDirection
+    $filter: ModelGoalFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    goalsByOwner(
+      owner: $owner
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        name
+        status
+        type
+        owner
+        startDate
+        daysCompleted
+        createdOn
+        updatedOn
+        _version
+        _deleted
+        _lastChangedAt
+      }
+      nextToken
+      startedAt
+    }
+  }
+`;

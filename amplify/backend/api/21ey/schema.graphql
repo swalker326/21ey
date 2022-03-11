@@ -6,7 +6,6 @@ type Goal
       update: "updateGoal"
     }
     timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }
-    subscriptions: { level: public }
   )
   @auth(
     rules: [
@@ -18,7 +17,7 @@ type Goal
   name: String!
   status: GoalStatus!
   type: String!
-  owner: String! @index(name: "byOwner", queryField: "goalByOwner")
+  owner: String! @index(name: "goalsByOwner", queryField: "goalsByOwner")
   startDate: AWSDate!
   daysCompleted: [AWSDate]
 }

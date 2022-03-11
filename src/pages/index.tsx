@@ -1,20 +1,15 @@
-import { Amplify, API, Auth, withSSRContext } from "aws-amplify";
+import { Amplify, Auth, withSSRContext } from "aws-amplify";
 import Head from "next/head";
 import awsExports from "../aws-exports";
-import { createGoal } from "../graphql/mutations";
 import { listGoals } from "../graphql/queries";
-import {
-  CreateGoalInput,
-  CreateGoalMutation,
-  ListGoalsQuery,
-  GoalStatus,
-  Goal,
-} from "../API";
-import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
+import { ListGoalsQuery, GoalStatus, Goal } from "../API";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { CognitoUserAmplify } from "@aws-amplify/ui";
-import { Authenticator } from "@aws-amplify/ui-react";
+import dayjs from "dayjs";
+import { handleCreateGoalAction } from "../actions/goals";
+import { Layout } from "../components/shared/Layout";
+import { RegisterFlow } from "../components/register/RegisterFlow";
 
 Amplify.configure({
   ...awsExports,
@@ -24,85 +19,49 @@ Amplify.configure({
 export default function Home({ goals = [] }: { goals: Goal[] }) {
   const router = useRouter();
 
-  async function handleCreateGoal(event) {
+  const handleCreateGoal = async (event) => {
     event.preventDefault();
-
+    const user: CognitoUserAmplify = await Auth.currentAuthenticatedUser();
     const form = new FormData(event.target);
 
-    try {
-      const user: CognitoUserAmplify = await Auth.currentAuthenticatedUser();
-
-      const createInput: CreateGoalInput = {
-        name: form.get("name").toString(),
-        type: "goal",
-        owner: user?.username,
-        status: GoalStatus.ACTIVE,
-        startDate: "2022-03-10",
-        // description: form.get('content').toString(),
-      };
-
-      const request = (await API.graphql({
-        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        query: createGoal,
-        variables: {
-          input: createInput,
-        },
-      })) as { data: CreateGoalMutation; errors: any[] };
-
-      router.push(`/goal/${request.data.createGoal.id}`);
-    } catch ({ errors }) {
-      console.error(...errors);
-      throw new Error(errors[0].message);
+    const createInput = {
+      name: form.get("name").toString(),
+      type: "goal",
+      owner: user?.username,
+      status: GoalStatus.ACTIVE,
+      startDate: dayjs().format("YYYY-MM-DD"),
+    };
+    const request = await handleCreateGoalAction(createInput);
+    if (request.id) {
+      router.push(`/goal/${request.id}`);
     }
-  }
+  };
 
   return (
-    <div>
+    <Layout>
       <Head>
-        <title>Amplify + Next.js</title>
+        <title>21ey</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1>Amplify + Next.js</h1>
-
         <p>
-          <code>{goals.length}</code>
-          Goals
+          <code>{goals.length} Goals</code>
         </p>
-
-        <div>
-          {goals.map((goal) => (
-            <a href={`/goal/${goal.id}`} key={goal.id}>
-              <h3>{goal.name}</h3>
-              <p>{goal.startDate}</p>
-            </a>
-          ))}
-
+        <RegisterFlow>
           <div>
             <h3>New Goal</h3>
-
-            <Authenticator>
-              {({ signOut, user }) => {
-                return (
-                  <form onSubmit={handleCreateGoal}>
-                    <fieldset>
-                      <legend>Title</legend>
-                      <input name="name" />
-                    </fieldset>
-
-                    <button>Create Goal</button>
-                    <button type="button" onClick={() => signOut}>
-                      Sign out
-                    </button>
-                  </form>
-                );
-              }}
-            </Authenticator>
+            <form onSubmit={handleCreateGoal}>
+              <fieldset>
+                <legend>Title</legend>
+                <input name="name" />
+              </fieldset>
+              <button>Create Goal</button>
+            </form>
           </div>
-        </div>
+        </RegisterFlow>
       </main>
-    </div>
+    </Layout>
   );
 }
 

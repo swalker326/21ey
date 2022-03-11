@@ -1,22 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
-import { Col, Container, Row } from "react-bootstrap";
 import { SignUpForm } from "./SignUpForm";
 import { ConfirmSignUpForm } from "./ConfirmSignUpForm";
 import { SignInForm } from "./SignInForm";
-import { useAppContext } from "../../context/state";
 import { FormInputState } from "./@types";
 import styled from "styled-components";
+import { CognitoUserAmplify } from "@aws-amplify/ui";
 
-export const Register: React.FC = ({ children }) => {
-  const state = useAppContext();
-  const initialFormValues: FormInputState = {
-    password: "",
-    email: "",
-    verificationCode: "",
-  };
+const initialFormValues: FormInputState = {
+  password: "",
+  email: "",
+  verificationCode: "",
+};
+
+type FormState = "signedIn" | "signIn" | "confirmSignUp" | "signUp";
+
+export const RegisterFlow: React.FC = ({ children }) => {
+  useEffect(() => {
+    Auth.currentAuthenticatedUser().then((user: CognitoUserAmplify) => {
+      if (user.username) {
+        setFormState("signedIn");
+        setUser(user);
+      } else {
+        setUser(null);
+        setFormState("signIn");
+      }
+    });
+  }, []);
+  const [formState, setFormState] = useState<FormState>("signIn");
+  const [user, setUser] = useState<CognitoUserAmplify | null>(null);
   const [formInputState, setFormInputState] =
     useState<FormInputState>(initialFormValues);
+  const [formErrors, setFormErrors] = useState([]);
 
   const signup = async () => {
     try {
@@ -28,7 +43,7 @@ export const Register: React.FC = ({ children }) => {
         },
       });
       setFormInputState({ ...formInputState });
-      state.auth.setRegisterFormState("confirmSignUp");
+      setFormState("confirmSignUp");
     } catch (err) {
       console.error(`Error siging up: ${{ err }}`);
     }
@@ -40,32 +55,22 @@ export const Register: React.FC = ({ children }) => {
         formInputState.verificationCode,
       );
       setFormInputState(initialFormValues);
-      state.auth.setRegisterFormState("signIn");
+      setFormState("signIn");
     } catch (err) {
       console.error(`Error confirming sign up: ${{ err }}`);
     }
   };
 
   const signin = async () => {
-    state.auth.signIn(formInputState.email, formInputState.password);
+    Auth.signIn({
+      username: formInputState.email,
+      password: formInputState.password,
+    }).then(() => {
+      setFormState("signedIn");
+    });
   };
-  const FormWrapper: React.FC = ({ children }) => {
-    return (
-      <Container
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          // width: "80%",
-          height: "20rem",
-          backgroundColor: "#F6BE00",
-          marginTop: "1rem",
-          borderRadius: "12px",
-        }}
-      >
-        {children}
-      </Container>
-    );
+  const signout = async () => {
+    Auth.signOut().then(() => setFormState("signIn"));
   };
   const formStateComponents = {
     signUp: (
@@ -90,37 +95,40 @@ export const Register: React.FC = ({ children }) => {
       />
     ),
     signedIn: (
-      <Container fluid>
-        <div className="register">{children}</div>
-      </Container>
+      <div>
+        <h3>
+          Hello,{" "}
+          <span style={{ color: "purple" }}>{user?.attributes.email}</span>
+        </h3>
+        <button onClick={signout}>Sign Out</button>
+        <div className="register-children">{children}</div>
+      </div>
     ),
   };
 
   return (
-    <Container className="mt-4">
+    <div className="mt-4">
       <ErrorContaier
         sm={8}
-        className={`error-container ${
-          state.auth.errors.length > 0 ? "show" : null
-        }`}
+        className={`error-container ${formErrors.length > 0 ? "show" : null}`}
       >
-        {state.auth.errors.map((error: string, index) => (
+        {formErrors.map((error: string, index) => (
           <ErrorMessage key={`error_${index}`}>{error}</ErrorMessage>
         ))}
       </ErrorContaier>
-      {formStateComponents[state.auth.registerFormState]}
-    </Container>
+      {formStateComponents[formState]}
+    </div>
   );
 };
 
-const ErrorContaier = styled(Container)`
+const ErrorContaier = styled.div`
   display: none;
   justify-content: flex-start;
   &.show {
     display: flex;
   }
 `;
-const ErrorMessage = styled(Col)`
+const ErrorMessage = styled.div`
   color: #ff000090;
   max-width: 500px;
   padding: 8px;
