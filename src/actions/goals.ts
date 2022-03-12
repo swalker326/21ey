@@ -19,6 +19,7 @@ export async function handleFetchGoalAction(variables: GetGoalQueryVariables): P
   return request.data.getGoal
 }
 export async function handleCreateGoalAction(createGoalInput: CreateGoalInput): Promise<Goal> {
+  if (createGoalInput.name === "") throw new Error('Goals must have a name to be entered')
   try {
     const request = (await API.graphql({
       authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,

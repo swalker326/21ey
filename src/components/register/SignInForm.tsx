@@ -11,7 +11,7 @@ export const SignInForm = ({
 }: RegisterFormProps) => {
   const SignUpFormSchema = object().shape({
     email: string().email("Invalid email address format").required("Required"),
-    password: string().required(),
+    password: string().required("Required"),
   });
   const onChangeStateUpdate = (e: ChangeEvent<HTMLInputElement>) => {
     setFormInputState({ ...formInputState, [e.target.name]: e.target.value });

@@ -97,8 +97,7 @@ export const RegisterFlow: React.FC = ({ children }) => {
     signedIn: (
       <div>
         <h3>
-          Hello,{" "}
-          <span style={{ color: "purple" }}>{user?.attributes.email}</span>
+          Hello, <span>{user?.attributes.email}</span>
         </h3>
         <button onClick={signout}>Sign Out</button>
         <div className="register-children">{children}</div>
