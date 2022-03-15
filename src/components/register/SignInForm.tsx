@@ -8,6 +8,7 @@ export const SignInForm = ({
   setFormInputState,
   formSubmit,
   formInputState,
+  setFormState
 }: RegisterFormProps) => {
   const SignUpFormSchema = object().shape({
     email: string().email("Invalid email address format").required("Required"),
@@ -67,7 +68,7 @@ export const SignInForm = ({
                     Sign In
                   </button>
                   <button
-                    // onClick={() => state.auth.setRegisterFormState("signUp")}
+                    onClick={() => setFormState("signUp")}
                     type="button"
                     className="mt-4"
                   >

@@ -1,7 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
 import { sizes, devices } from './devices';
 export type ThemeContextType = ThemeColors & ThemeDefaults & {
-  setCurrentTheme: Dispatch<SetStateAction<"dark" | "light">>
+  handleColorModeChange: () => void
 }
 export type ThemeColors = {
   mode: "light" | "dark";
@@ -13,6 +12,7 @@ export type ThemeColors = {
     button: string,
   },
   text: {
+    button: string,
     link: string,
     primary: string,
     secondary: string,
@@ -36,7 +36,15 @@ export type ThemeDefaults = {
     heading: number,
     code: number,
   },
+  zIndex: {
+    close: number,
+    far: number,
+  }
 }
+
+export type Theme = ThemeColors & ThemeDefaults & {
+  handleColorModeChange: () => void;
+};
 
 const light: ThemeColors = {
   mode: "light",
@@ -48,6 +56,7 @@ const light: ThemeColors = {
     button: "#666",
   },
   text: {
+    button: "#d3d3d3",
     link: "#F6BE00",
     primary: '#050505',
     secondary: '#2f3037',
@@ -65,29 +74,29 @@ const dark: ThemeColors = {
     secondary: '#666666',
     inset: '#111111',
     input: 'rgba(191,193,201,0.12)',
-    button: "#f9f9f9"
+    button: "#000"
   },
   text: {
     link: "#F6BE00",
     primary: '#fbfbfc',
     secondary: '#e3e4e8',
     tertiary: '#a9abb6',
+    button: '#f9f9f9',
     quarternary: '#6c6f7e',
     placeholder: 'rgba(145,148,161,0.5)',
     onPrimary: '#050505',
   },
-  // ...
 }
 
 const defaultTheme: ThemeDefaults = {
   fontSizes: {
-    14: '14px', // 0
-    16: '16px', // 1
-    18: '18px', // 2
-    22: '22px', // 3
-    26: '26px', // 4
-    32: '32px', // 5
-    40: '40px', // 6
+    14: '14px',
+    16: '16px',
+    18: '18px',
+    22: '22px',
+    26: '26px',
+    32: '32px',
+    40: '40px',
   },
   fontWeights: {
     body: 400,
@@ -101,6 +110,10 @@ const defaultTheme: ThemeDefaults = {
     heading: 1.3,
     code: 1.6,
   },
+  zIndex: {
+    close: 1000,
+    far: 0,
+  }
 }
 export const darkTheme = { ...defaultTheme, sizes, devices, ...dark }
 export const lightTheme = { ...defaultTheme, sizes, devices, ...light }

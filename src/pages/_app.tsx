@@ -2,8 +2,8 @@ import type { AppProps } from "next/app";
 import Amplify from "aws-amplify";
 import NextNProgress from "nextjs-progressbar";
 import config from "../aws-exports";
-import { ThemeWrapper, useThemeContext } from "../context/ThemeContext";
-import { GlobalStyle } from "../styles/baseStyles";
+import { ThemeWrapper } from "../context/ThemeContext";
+import { GlobalStyles } from "../styles/GlobalStyles";
 
 Amplify.configure({
   ...config,
@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <ThemeWrapper>
-        <GlobalStyle />
+        <GlobalStyles />
         <NextNProgress
           color="#F6BE00"
           startPosition={0.5}

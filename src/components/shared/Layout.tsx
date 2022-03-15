@@ -1,24 +1,45 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Auth } from "aws-amplify";
-import { useThemeContext } from "../../context/ThemeContext";
+import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { Button } from "./buttons/Button";
+import { useTheme } from "styled-components";
+
 export const Layout: React.FC = ({ children }) => {
-  const theme = useThemeContext();
+  const theme = useTheme();
   const handleDarkModeSwitch = () => {
-    theme.setCurrentTheme(theme.mode === "dark" ? "light" : "dark");
+    theme.handleColorModeChange();
   };
+  const [currentUser, setCurrentUser] = useState(null);
+  // const handleSignOutClick = () => {
+  //   if (currentUser) {
+  //     Auth.signOut();
+  //   } else {
+  //   }
+  // };
+  const getUser = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      setCurrentUser(user);
+    } catch (error) {
+      setCurrentUser(null);
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
   return (
     <div>
       <div>
-        <Link href="/">
-          <a>
-            <Image src="/21eyLogo.svg" width={70} height={70} />
-          </a>
-        </Link>
+        <LogoContainer>
+          <Link href="/">
+            <a>
+              <Image src="/21eyLogo.svg" width={70} height={70} />
+            </a>
+          </Link>
+        </LogoContainer>
         <ul>
-          <li>
-            <Link href={"/"}>Home</Link>
-          </li>
           <li>
             <Link href={"/register"}>Register/Login</Link>
           </li>
@@ -26,9 +47,19 @@ export const Layout: React.FC = ({ children }) => {
             <Link href="/profile">User</Link>
           </li>
         </ul>
-        <button onClick={handleDarkModeSwitch}>Dark</button>
+        <div style={{ display: "flex" }}>
+          {/* <Button onClick={handleSignOutClick}>
+            {currentUser ? "Sign Out" : "Sign In"}
+          </Button> */}
+          <Button onClick={() => theme.handleColorModeChange()}>Dark</Button>
+          {/* <Button onClick={handleDarkModeSwitch}>Dark</Button> */}
+        </div>
       </div>
       {children}
     </div>
   );
 };
+
+const LogoContainer = styled.div`
+  display: flex;
+`;

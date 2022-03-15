@@ -16,22 +16,25 @@ const initialFormValues: FormInputState = {
 type FormState = "signedIn" | "signIn" | "confirmSignUp" | "signUp";
 
 export const RegisterFlow: React.FC = ({ children }) => {
-  useEffect(() => {
-    Auth.currentAuthenticatedUser().then((user: CognitoUserAmplify) => {
-      if (user.username) {
-        setFormState("signedIn");
-        setUser(user);
-      } else {
-        setUser(null);
-        setFormState("signIn");
-      }
-    });
-  }, []);
   const [formState, setFormState] = useState<FormState>("signIn");
   const [user, setUser] = useState<CognitoUserAmplify | null>(null);
   const [formInputState, setFormInputState] =
     useState<FormInputState>(initialFormValues);
   const [formErrors, setFormErrors] = useState([]);
+
+  const getCurrentUser = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      setFormState("signedIn");
+      setUser(user);
+    } catch (error) {
+      setUser(null);
+      setFormState("signIn");
+    }
+  };
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   const signup = async () => {
     try {
@@ -78,6 +81,7 @@ export const RegisterFlow: React.FC = ({ children }) => {
         formInputState={formInputState}
         setFormInputState={setFormInputState}
         formSubmit={signup}
+        setFormState={setFormState}
       />
     ),
     signIn: (
@@ -85,6 +89,7 @@ export const RegisterFlow: React.FC = ({ children }) => {
         formInputState={formInputState}
         setFormInputState={setFormInputState}
         formSubmit={signin}
+        setFormState={setFormState}
       />
     ),
     confirmSignUp: (
@@ -92,12 +97,13 @@ export const RegisterFlow: React.FC = ({ children }) => {
         formInputState={formInputState}
         setFormInputState={setFormInputState}
         formSubmit={confirmSignUp}
+        setFormState={setFormState}
       />
     ),
     signedIn: (
       <div>
         <h3>
-          Hello, <span>{user?.attributes.email}</span>
+          Hello, <span>{user?.attributes?.email}</span>
         </h3>
         <button onClick={signout}>Sign Out</button>
         <div className="register-children">{children}</div>
@@ -108,7 +114,6 @@ export const RegisterFlow: React.FC = ({ children }) => {
   return (
     <div className="mt-4">
       <ErrorContaier
-        sm={8}
         className={`error-container ${formErrors.length > 0 ? "show" : null}`}
       >
         {formErrors.map((error: string, index) => (

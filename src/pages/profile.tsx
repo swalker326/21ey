@@ -28,15 +28,6 @@ Amplify.configure({ ...awsExports, ssr: true });
 export default function OwnerPage({ goals }: { goals: Goal[] }) {
   const router = useRouter();
 
-  // const handleAbandonGoal = (goal) => {
-  //   const goalInput: UpdateGoalInput = {
-  //     id: goal.id,
-  //     _version: goal._version,
-  //     status: GoalStatus.FAILED,
-  //   };
-  //   handleUpdateGoalAction(goalInput);
-  // };
-
   const handleDelete = (goal: Goal) => {
     const deleteGoalVariables: DeleteGoalMutationVariables = {
       input: {

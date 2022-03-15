@@ -1,3 +1,5 @@
+import { SetStateAction } from "react";
+
 export type FormState = 'signUp' | 'confirmSignUp' | 'signIn' | 'signedIn'
 export type FormInputState = {
   email: string,
@@ -13,5 +15,6 @@ export type RegisterFormProps = {
   setFormInputState: Dispatch<
     SetStateAction<FormInputState>
   >;
+  setFormState: Dispatch<SetStateAction<FormState>>;
   formSubmit: () => void,
 }

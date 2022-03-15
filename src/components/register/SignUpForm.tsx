@@ -8,6 +8,7 @@ export const SignUpForm = ({
   formInputState,
   setFormInputState,
   formSubmit,
+  setFormState,
 }: RegisterFormProps) => {
   const SignUpFormSchema = object().shape({
     email: string().email("Invalid email address format").required("Required"),
@@ -34,7 +35,6 @@ export const SignUpForm = ({
           }}
           validationSchema={SignUpFormSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log("values :", values);
             formSubmit();
             setSubmitting(false);
           }}
@@ -74,7 +74,7 @@ export const SignUpForm = ({
                     Sign Up
                   </button>
                   <button
-                    // onClick={() => state.auth.setRegisterFormState("signIn")}
+                    onClick={() => setFormState("signIn")}
                     type="button"
                     className="mt-4"
                   >

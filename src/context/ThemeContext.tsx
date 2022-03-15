@@ -1,36 +1,29 @@
-import { createContext, FC, useContext, useState } from "react";
-import { lightTheme, darkTheme, ThemeContextType } from "../styles/theme";
+import { FC, useState } from "react";
+import { lightTheme, darkTheme } from "../styles/theme";
 import { ThemeProvider } from "styled-components";
-
-const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
-
-export function useThemeContext() {
-  const themeContext = useContext(ThemeContext);
-  if (!themeContext) {
-    throw new Error("Theme context accessed outsde of provider tree");
-  }
-  return themeContext;
-}
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const ThemeWrapper: FC = ({ children }) => {
-  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">("dark");
+  const [localColorMode, setLocalColorMode] = useLocalStorage<"dark" | "light">(
+    "21ey_color_mode",
+    "dark",
+  );
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(
+    localColorMode,
+  );
+  const handleColorModeChange = () => {
+    setCurrentTheme(currentTheme === "dark" ? "light" : "dark");
+    setLocalColorMode(currentTheme === "dark" ? "light" : "dark");
+  };
   return (
-    <ThemeContext.Provider
-      value={
+    <ThemeProvider
+      theme={
         currentTheme === "dark"
-          ? { ...darkTheme, setCurrentTheme }
-          : { ...lightTheme, setCurrentTheme }
+          ? { ...darkTheme, handleColorModeChange }
+          : { ...lightTheme, handleColorModeChange }
       }
     >
-      <ThemeProvider
-        theme={
-          currentTheme === "dark"
-            ? { ...darkTheme, setCurrentTheme }
-            : { ...lightTheme, setCurrentTheme }
-        }
-      >
-        {children}
-      </ThemeProvider>
-    </ThemeContext.Provider>
+      {children}
+    </ThemeProvider>
   );
 };

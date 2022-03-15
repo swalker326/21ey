@@ -26,7 +26,6 @@ export const ConfirmSignUpForm = ({
           }}
           validationSchema={ConfirmationFormSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log("values :", values);
             formSubmit();
             setSubmitting(false);
           }}
