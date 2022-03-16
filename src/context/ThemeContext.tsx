@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { lightTheme, darkTheme } from "../styles/theme";
+import { defaultTheme } from "../styles/theme";
 import { ThemeProvider } from "styled-components";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
@@ -8,21 +8,23 @@ export const ThemeWrapper: FC = ({ children }) => {
     "21ey_color_mode",
     "dark",
   );
-  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(
+  const [currentThemeMode, setCurrentThemeMode] = useState<"dark" | "light">(
     localColorMode,
   );
+  const [currentTheme, setCurrentTheme] = useState({
+    ...defaultTheme,
+    mode: currentThemeMode,
+  });
   const handleColorModeChange = () => {
-    setCurrentTheme(currentTheme === "dark" ? "light" : "dark");
-    setLocalColorMode(currentTheme === "dark" ? "light" : "dark");
+    setCurrentTheme({
+      ...currentTheme,
+      mode: currentTheme.mode === "dark" ? "light" : "dark",
+    });
+    setCurrentThemeMode(currentThemeMode === "dark" ? "light" : "dark");
+    setLocalColorMode(currentThemeMode === "dark" ? "light" : "dark");
   };
   return (
-    <ThemeProvider
-      theme={
-        currentTheme === "dark"
-          ? { ...darkTheme, handleColorModeChange }
-          : { ...lightTheme, handleColorModeChange }
-      }
-    >
+    <ThemeProvider theme={{ ...currentTheme, handleColorModeChange }}>
       {children}
     </ThemeProvider>
   );

@@ -1,28 +1,16 @@
 import { sizes, devices } from './devices';
-export type ThemeContextType = ThemeColors & ThemeDefaults & {
-  handleColorModeChange: () => void
-}
-export type ThemeColors = {
-  mode: "light" | "dark";
-  bg: {
-    primary: string,
-    secondary: string,
-    inset: string,
-    input: string,
-    button: string,
-  },
-  text: {
-    button: string,
-    link: string,
-    primary: string,
-    secondary: string,
-    tertiary: string,
-    quarternary: string,
-    placeholder: string,
-    onPrimary: string,
-  },
-}
+
 export type ThemeDefaults = {
+  mode: "light" | "dark";
+  handleColorModeChange: () => void;
+  light: ThemeColors;
+  dark: ThemeColors;
+  sizes: {
+
+  },
+  devices: {
+
+  },
   fontSizes: { [key: number]: string };
   fontWeights: {
     body: number,
@@ -42,12 +30,49 @@ export type ThemeDefaults = {
   }
 }
 
-export type Theme = ThemeColors & ThemeDefaults & {
-  handleColorModeChange: () => void;
-};
+export type ThemeColors = {
+  bg: {
+    primary: string,
+    secondary: string,
+    inset: string,
+    input: string,
+    button: string,
+  },
+  text: {
+    button: string,
+    link: string,
+    primary: string,
+    secondary: string,
+    tertiary: string,
+    quarternary: string,
+    placeholder: string,
+    onPrimary: string,
+  },
+}
+
+export function get<T, P1 extends keyof NonNullable<T>>(obj: T, prop1: P1): NonNullable<T>[P1] | undefined;
+
+export function get<
+  T,
+  P1 extends keyof NonNullable<T>,
+  P2 extends keyof NonNullable<NonNullable<T>[P1]>
+>(obj: T, prop1: P1, prop2: P2): NonNullable<NonNullable<T>[P1]>[P2] | undefined;
+
+export function get<
+  T,
+  P1 extends keyof NonNullable<T>,
+  P2 extends keyof NonNullable<NonNullable<T>[P1]>,
+  P3 extends keyof NonNullable<NonNullable<NonNullable<T>[P1]>[P2]>
+>(obj: T, prop1: P1, prop2: P2, prop3: P3): NonNullable<NonNullable<NonNullable<T>[P1]>[P2]>[P3] | undefined;
+
+export function get(obj: any, ...props: string[]): any {
+  return obj && props.reduce(
+    (result, prop) => result == null ? undefined : result[prop],
+    obj
+  );
+}
 
 const light: ThemeColors = {
-  mode: "light",
   bg: {
     primary: '#eff0f5',
     secondary: '#ffffff',
@@ -68,7 +93,6 @@ const light: ThemeColors = {
 }
 
 const dark: ThemeColors = {
-  mode: "dark",
   bg: {
     primary: '#212529',
     secondary: '#666666',
@@ -88,7 +112,13 @@ const dark: ThemeColors = {
   },
 }
 
-const defaultTheme: ThemeDefaults = {
+export const defaultTheme: ThemeDefaults = {
+  mode: "light",
+  handleColorModeChange: () => { console.error("No Color Mode Function Passed") },
+  sizes,
+  devices,
+  light: light,
+  dark: dark,
   fontSizes: {
     14: '14px',
     16: '16px',
@@ -115,5 +145,3 @@ const defaultTheme: ThemeDefaults = {
     far: 0,
   }
 }
-export const darkTheme = { ...defaultTheme, sizes, devices, ...dark }
-export const lightTheme = { ...defaultTheme, sizes, devices, ...light }

@@ -105,5 +105,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const NewStyledButton = styled.button`
-  color: ${({ theme }) => theme.bg.button};
+  color: ${({ theme }) =>
+    theme.mode === "dark" ? theme.dark.text.primary : theme.light.text.primary};
+  background-color: ${({ theme }) =>
+    theme.mode === "dark" ? theme.dark.bg.primary : theme.light.bg.primary};
 `;

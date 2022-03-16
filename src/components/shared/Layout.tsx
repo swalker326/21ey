@@ -8,9 +8,6 @@ import { useTheme } from "styled-components";
 
 export const Layout: React.FC = ({ children }) => {
   const theme = useTheme();
-  const handleDarkModeSwitch = () => {
-    theme.handleColorModeChange();
-  };
   const [currentUser, setCurrentUser] = useState(null);
   // const handleSignOutClick = () => {
   //   if (currentUser) {
